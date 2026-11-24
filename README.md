@@ -1,4 +1,6 @@
-# Recompresseur
+<p align="center"><img src="docs/icon.png" width="120" alt="Recompresseur icon"></p>
+
+<h1 align="center">Recompresseur</h1>
 
 An Android app that degrades images on purpose, so they look like a screenshot that was re-shared, re-saved and
 re-compressed a hundred times, with a live preview.
@@ -6,6 +8,12 @@ re-compressed a hundred times, with a live preview.
 It works fully offline: the app has no internet permission, so your images never leave the phone.
 
 > The interface is currently in French.
+
+<p align="center">
+  <img src="docs/presets.png" width="31%" alt="Presets">
+  <img src="docs/artifacts.png" width="31%" alt="Artifacts settings">
+  <img src="docs/passes.png" width="31%" alt="Passes settings">
+</p>
 
 ## Features
 
