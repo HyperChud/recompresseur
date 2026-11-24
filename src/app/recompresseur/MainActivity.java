@@ -32,6 +32,8 @@ public class MainActivity extends Activity {
   Uri pendingShare;
   boolean ready = false;
   int inTop, inBottom, inKb;
+  /** Set by the page: "fr" or "en" (the in-app language setting wins over the phone language). */
+  volatile String lang = java.util.Locale.getDefault().getLanguage().equals("fr") ? "fr" : "en";
 
   /** Edge to edge: the app draws under the system bars, the page handles the insets. */
   void edgeToEdge() {
@@ -89,7 +91,7 @@ public class MainActivity extends Activity {
         Intent i = new Intent(Intent.ACTION_GET_CONTENT);
         i.addCategory(Intent.CATEGORY_OPENABLE);
         i.setType("image/*");
-        try { startActivityForResult(Intent.createChooser(i, "Choisir une image"), PICK); }
+        try { startActivityForResult(Intent.createChooser(i, "fr".equals(lang) ? "Choisir une image" : "Choose an image"), PICK); }
         catch (Exception e) { pickCb = null; return false; }
         return true;
       }
@@ -129,7 +131,7 @@ public class MainActivity extends Activity {
       byte[] buf = new byte[65536]; int n;
       while ((n = in.read(buf)) > 0) bo.write(buf, 0, n);
       web.evaluateJavascript("window.loadB64&&loadB64('" + Base64.encodeToString(bo.toByteArray(), Base64.NO_WRAP) + "')", null);
-    } catch (Exception e) { say("Impossible d'ouvrir l'image partagée"); }
+    } catch (Exception e) { say("share"); }
   }
 
   @Override protected void onActivityResult(int req, int res, Intent data) {
@@ -140,8 +142,8 @@ public class MainActivity extends Activity {
       pickCb = null;
     } else if (req == CREATE) {
       if (res == RESULT_OK && data != null && data.getData() != null && pendingSave != null) {
-        try (OutputStream o = getContentResolver().openOutputStream(data.getData())) { o.write(pendingSave); say("Image enregistrée"); }
-        catch (Exception e) { say("Échec de l'enregistrement"); }
+        try (OutputStream o = getContentResolver().openOutputStream(data.getData())) { o.write(pendingSave); say("saved"); }
+        catch (Exception e) { say("fail"); }
       }
       pendingSave = null;
     }
@@ -153,13 +155,16 @@ public class MainActivity extends Activity {
     });
   }
 
-  void say(final String m) {
+  /** Shows a message from the page's string table (see window.sayKey in index.html). */
+  void say(final String key) {
     runOnUiThread(new Runnable() { public void run() {
-      web.evaluateJavascript("window.say&&say(" + org.json.JSONObject.quote(m) + ")", null);
+      web.evaluateJavascript("window.sayKey&&sayKey(" + org.json.JSONObject.quote(key) + ")", null);
     }});
   }
 
   class Bridge {
+    @JavascriptInterface public void setLang(String l) { lang = "fr".equals(l) ? "fr" : "en"; }
+
     @JavascriptInterface public void save(String b64, final String name) {
       final byte[] bytes = Base64.decode(b64, Base64.DEFAULT);
       runOnUiThread(new Runnable() { public void run() {
@@ -171,7 +176,7 @@ public class MainActivity extends Activity {
             cv.put("relative_path", "Pictures/Recompresseur");
             Uri u = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, cv);
             try (OutputStream o = getContentResolver().openOutputStream(u)) { o.write(bytes); }
-            say("Enregistrée dans Images/Recompresseur");
+            say("pics");
             return;
           } catch (Exception e) { /* fall back to the file picker */ }
         }

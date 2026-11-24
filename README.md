@@ -7,7 +7,8 @@ re-compressed a hundred times, with a live preview.
 
 It works fully offline: the app has no internet permission, so your images never leave the phone.
 
-> The interface is currently in French.
+The interface is in English and French. It follows the phone's language by default, and you can switch it
+in **Presets → Language**.
 
 <p align="center">
   <img src="docs/presets.png" width="31%" alt="Presets">
