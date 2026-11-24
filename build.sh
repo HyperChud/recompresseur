@@ -14,8 +14,8 @@ KS_ALIAS=${KS_ALIAS:-recomp}
 
 rm -rf build && mkdir -p build/gen build/obj
 aapt package -f -m -J build/gen -M AndroidManifest.xml -S res -A assets -I $AJAR -F build/unsigned.apk
-javac -nowarn -source 8 -target 8 -bootclasspath $AJAR -d build/obj $(find src build/gen -name '*.java') 2>&1 | grep -v -e Picked -e warning || true
-dalvik-exchange --dex --output=build/classes.dex build/obj
+javac -nowarn -source 8 -target 8 -encoding UTF-8 -bootclasspath $AJAR -d build/obj $(find src build/gen -name '*.java') 2>&1 | grep -v -e Picked -e warning || true
+dalvik-exchange --dex --min-sdk-version=23 --output=build/classes.dex build/obj
 (cd build && aapt add unsigned.apk classes.dex >/dev/null)
 zipalign -f 4 build/unsigned.apk build/aligned.apk
 [ -f "$KEYSTORE" ] || keytool -genkeypair -keystore "$KEYSTORE" -storepass "$KS_PASS" -keypass "$KS_PASS" \
