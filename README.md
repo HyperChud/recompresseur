@@ -44,10 +44,13 @@ Double-tap a slider row to reset it.
 
 ### With GitHub Actions
 
-Every push to `main` builds the APK. Open the **Actions** tab, pick the latest run and download the
+To publish a new release, push a tag like `v1.1` (or run the **Release** workflow by hand). It builds a signed
+APK and attaches it to a GitHub release. This needs the signing secrets described below.
+
+For quick test builds, every push to `main` builds the APK. Open the **Actions** tab, pick the latest run and download the
 `Recompresseur` artifact.
 
-By default, each run signs the APK with a new throwaway key, so you have to uninstall the old version before
+Without the secrets below, test builds are signed with a new throwaway key, so you have to uninstall the old version before
 installing a new one. To install updates over the previous version, add these repository secrets under
 **Settings → Secrets and variables → Actions**:
 
